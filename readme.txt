@@ -1,0 +1,1 @@
+This is a little arduino sketch for digispark - when combined with a little clicky rotary encoder, it creates a USB keyboard which types in volume up, volume down, and mute keys to adjust the system volume level with the knob. See wiring.png for a wiring diagram and hardware.jpg for a photo of the some innards!
