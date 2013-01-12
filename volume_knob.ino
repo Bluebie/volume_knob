@@ -1,5 +1,5 @@
 // a little sketch for adjusting a computer's volume level using a clicky knob
-// by bluebie - open source
+// by Jenna Fox - MIT License
 #include "DigiKeyboard.h"
 #define KEY_MUTE 127
 #define KEY_VOLUME_UP 128
@@ -53,23 +53,29 @@ void button_pressed() {
   DigiKeyboard.sendKeyStroke(KEY_MUTE);
 }
 
+// returns the bits from the two knob wires as a 2-bit number
 byte knob_bits() {
   return digitalRead(KNOB_QUAD_LEFT) << 1 | digitalRead(KNOB_QUAD_RIGHT);
 }
 
-// reads a simple incremental quad encoder knob, returns -1, 0, or +1
+// reads a simple incremental quad encoder knob, returns -1, 0, or +1 indicating if the knob has rotated
+// to the left or right by one click. Call this function as often as possible so it handles knobs being turned
+// very quickly okay
 char read_knob() {
-  static byte previous_state;
+  static byte previous_state; // these two variables keep their values between function calls
   static byte armed;
   byte state = knob_bits();
   char result = 0;
   
+  // to ensure bouncy mechanical switch stuff only makes one positive or negative impulse for each mechanical click
+  // we "arm" it when it gets half way through a click
   if (state == 0b00) {
-    armed = true;
+    armed = true; // allow one click result
   }
   
-  if (armed == true && state == 0b11) { // we're armed and completed a cycle...
-    armed = false; // we've used up our one token...
+  // then when it finishes a click, we consume the one "armed" token and deliver the result just once to the caller
+  if (armed == true && state == 0b11) {
+    armed = false; // consumed.
     if (previous_state == 0b01) {
       result = -1;
     } else if (previous_state == 0b10) {
